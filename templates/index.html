@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Медиа Конвертер</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4a6bff;
+            --primary-hover: #3a5bef;
+            --error: #ff4757;
+            --success: #2ed573;
+            --text: #2f3542;
+            --light-text: #57606f;
+            --bg: #f1f2f6;
+            --card-bg: #ffffff;
+            --border: #dfe4ea;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--light-text);
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .file-input-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            background-color: rgba(74, 107, 255, 0.03);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .file-input-label:hover {
+            border-color: var(--primary);
+            background-color: rgba(74, 107, 255, 0.05);
+        }
+        
+        .file-input-label i {
+            font-size: 48px;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .file-input-label span {
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .file-input-label small {
+            color: var(--light-text);
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        .file-input {
+            position: absolute;
+            width: 0.1px;
+            height: 0.1px;
+            opacity: 0;
+            overflow: hidden;
+            z-index: -1;
+        }
+        
+        .file-name {
+            margin-top: 10px;
+            font-size: 14px;
+            color: var(--light-text);
+            text-align: center;
+        }
+        
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background-color: white;
+            font-size: 16px;
+            color: var(--text);
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 1em;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(74, 107, 255, 0.2);
+        }
+        
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        button:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button i {
+            margin-right: 8px;
+        }
+        
+        #result {
+            margin-top: 25px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .error {
+            background-color: rgba(255, 71, 87, 0.1);
+            border: 1px solid var(--error);
+            color: var(--error);
+        }
+        
+        .success {
+            background-color: rgba(46, 213, 115, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+        
+        .spinner {
+            display: none;
+            margin: 30px auto;
+            text-align: center;
+        }
+        
+        .spinner-circle {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(74, 107, 255, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        .spinner-text {
+            margin-top: 15px;
+            color: var(--light-text);
+            font-weight: 500;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .download-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: var(--success);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .download-btn:hover {
+            background-color: #25c063;
+            transform: translateY(-1px);
+        }
+        
+        .download-btn i {
+            margin-right: 8px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="logo">
+            <i class="fas fa-exchange-alt"></i> Медиа Конвертер 
+        </h1>
+        
+        <form id="converterForm">
+            <div class="form-group">
+                <label for="file">Выберите файл для конвертации:</label>
+                <div class="file-input-wrapper">
+                    <label for="file" class="file-input-label" id="fileLabel">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Нажмите для выбора файла</span>
+                        <small>Поддерживаемые форматы: MP4, AVI, MOV, MKV, MP3, WAV, OGG, AAC</small>
+                    </label>
+                    <input type="file" id="file" name="file" class="file-input" required>
+                    <div class="file-name" id="fileName"></div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="format">Формат для конвертации:</label>
+                <select id="format" name="format">
+                    <optgroup label="Видео форматы">
+                        <option value="mp4">MP4 (H.264)</option>
+                        <option value="mov">MOV</option>
+                        <option value="avi">AVI</option>
+                        <option value="mkv">MKV</option>
+                    </optgroup>
+                    <optgroup label="Аудио форматы">
+                        <option value="mp3">MP3</option>
+                        <option value="wav">WAV</option>
+                        <option value="ogg">OGG</option>
+                        <option value="aac">AAC</option>
+                    </optgroup>
+                </select>
+            </div>
+            
+            <button type="submit" id="submitBtn">
+                <i class="fas fa-cog"></i> Конвертировать
+            </button>
+        </form>
+        
+        <div class="spinner" id="spinner">
+            <div class="spinner-circle"></div>
+            <div class="spinner-text">Идет конвертация...</div>
+        </div>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('file');
+            const fileLabel = document.getElementById('fileLabel');
+            const fileName = document.getElementById('fileName');
+            const form = document.getElementById('converterForm');
+            const resultDiv = document.getElementById('result');
+            const spinner = document.getElementById('spinner');
+            const submitBtn = document.getElementById('submitBtn');
+    
+            fileInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    fileName.textContent = this.files[0].name;
+                    fileLabel.innerHTML = `
+                        <i class="fas fa-file-alt"></i>
+                        <span>Файл выбран</span>
+                        <small>Нажмите для выбора другого файла</small>
+                    `;
+                }
+            });
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (!fileInput.files[0]) {
+                    showResult('Пожалуйста, выберите файл', 'error');
+                    return;
+                }
+                
+                spinner.style.display = 'block';
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-cog fa-spin"></i> Обработка...';
+                resultDiv.style.display = 'none';
+                
+                const formData = new FormData();
+                formData.append('file', fileInput.files[0]);
+                formData.append('format', document.getElementById('format').value);
+                
+                fetch('/convert', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    spinner.style.display = 'none';
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-cog"></i> Конвертировать';
+                    
+                    if (data.success) {
+                        showResult(`
+                            <i class="fas fa-check-circle"></i> Конвертация завершена успешно!
+                            <br><br>
+                            <a href="${data.download_url}" class="download-btn" download>
+                                <i class="fas fa-download"></i> Скачать ${data.filename}
+                            </a>
+                        `, 'success');
+                    } else {
+                        showResult(`<i class="fas fa-times-circle"></i> Ошибка: ${data.error || 'Неизвестная ошибка'}`, 'error');
+                    }
+                })
+                .catch(error => {
+                    spinner.style.display = 'none';
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-cog"></i> Конвертировать';
+                    showResult(`<i class="fas fa-times-circle"></i> Ошибка: ${error.message}`, 'error');
+                });
+            });
+            
+            function showResult(message, type) {
+                resultDiv.innerHTML = message;
+                resultDiv.className = type;
+                resultDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+flask-limiter
+flask
+ffmpeg-python
+werkzeug

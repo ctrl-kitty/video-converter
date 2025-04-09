@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: video_converter_service
+    restart: always
+    ports:
+      - "5000:5000"
